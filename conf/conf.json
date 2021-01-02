@@ -1,6 +1,8 @@
 {
-  "https": true,
-  "requestUrl": "https://stallman.org/",
+  "https": false,
+  "threadNumber": 1000,
+  "loopCount":6,
+  "requestUrl": "http://kakao/",
   "proxyIporHostname": "127.0.0.1",
   "proxyPort": 1080
 }
