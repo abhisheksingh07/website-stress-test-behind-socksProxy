@@ -7,7 +7,7 @@ const generateLogData = async ()=>{
         output: process.stdout,
         terminal: false
     });
-    let successCount=0; let errorCount=0; let totalNumberRequests = 0; let totalNumberofError = 0; 
+    let successCount=0; let errorCount=0; let totalNumberRequests = 0; 
     let erropercentage=0; let successpercentage=0;
     file.on('line', (line) => {
       let resultantOnject = JSON.parse(line);
@@ -85,7 +85,7 @@ const generateLogData = async ()=>{
     </body>
     </html>`
 
-    fs.writeFile('loadtestData.html', htmlContent, (error) => { throw error});
+    fs.writeFile('loadtestresult.html', htmlContent, (error) => { throw error});
     
     });
 }
