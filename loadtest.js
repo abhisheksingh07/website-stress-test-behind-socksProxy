@@ -3,7 +3,9 @@ const url = require('url');
 const http = require('http');
 const https = require('https');
 let winston = require('winston');
+let generateLogData = require('./filereadlinebyline.js');
 let SocksProxyAgent = require('socks-proxy-agent');
+const { type } = require('os');
 const proxy = `socks://${conf.proxyIporHostname}:${conf.proxyPort}`;
 let urlRequest = url.parse(conf.requestUrl);
 
@@ -18,24 +20,16 @@ let loggers = {
 
 // create an instance of the `SocksProxyAgent` class with the proxy server information
 let agent = new SocksProxyAgent(proxy);
+const caller = conf.ssl ? https : http;
 
 function sendRequest(url, thread, requestNumber) {
   return new Promise((resolve, reject) => {
-    if (conf.https) {
-      https.get(url, response => {
-        if (response.statusCode == 200) {
-          resolve(`Thread ${thread} - ${requestNumber} status code ${response.statusCode}`);
-        }
-        reject(`Error Thread ${thread} - ${requestNumber} status code ${response.statusCode}`)
-      }).on('error', (error) => (reject(`Error Thread ${thread} - ${requestNumber} Error status${error}`))).end()
-    }
-    http.get(url, response => {
+    caller.get(url, response => {
       if (response.statusCode == 200) {
         resolve(`Thread ${thread} - ${requestNumber} status code ${response.statusCode}`);
       }
       reject(`Error Thread ${thread} - ${requestNumber} status code ${response.statusCode}`)
-
-    }).on('error', (error) => (reject(`Error Thread ${thread} - ${requestNumber} Error status ${error}`))).end()
+    }).on('error', (error) => (reject(`Error Thread ${thread} - ${requestNumber} Error status${error}`))).end()
   })
 }
 
@@ -57,5 +51,8 @@ async function threadRequest(thread) {
     }
   }
   if (--thread) threadRequest(thread);
+  if (thread == 0){
+    generateLogData.generateLogData();   
+  }
 }
 threadRequest(conf.threadNumber);
