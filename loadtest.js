@@ -55,4 +55,6 @@ async function threadRequest(thread) {
     generateLogData.generateLogData();   
   }
 }
-threadRequest(conf.threadNumber);
+
+// Support direct execution
+if (require.main === module) threadRequest(conf.threadNumber);
