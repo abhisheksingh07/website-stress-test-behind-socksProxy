@@ -11,21 +11,21 @@ const _LOGGER = winston.createLogger({
 const LOGGER = {
   info: (message) => _LOGGER.log({ level: "info", message: `${message}` }),
   error: (message) => _LOGGER.log({ level: "error", message: `${message}` })
-}
+};
 
-function sendRequest(url, thread, requestNumber) {
+const sendRequest = (url, threadNumber, requestNumber) => {
   const caller = conf.ssl ? require("https") : require("http");
   return new Promise((resolve, reject) => {
     caller.get(url, response => {
       if (response.statusCode == 200) {
-        resolve(`Thread ${thread} - ${requestNumber} status code ${response.statusCode}`);
+        resolve(`Thread ${threadNumber} - ${requestNumber} status code ${response.statusCode}`);
       }
-      reject(`Error Thread ${thread} - ${requestNumber} status code ${response.statusCode}`)
-    }).on('error', (error) => (reject(`Error Thread ${thread} - ${requestNumber} Error status${error}`))).end()
+      reject(`Error Thread ${threadNumber} - ${requestNumber} status code ${response.statusCode}`)
+    }).on('error', (error) => (reject(`Error Thread ${threadNumber} - ${requestNumber} Error status${error}`))).end()
   })
-}
+};
 
-async function threadRequest(thread) {
+const threadRequest = async (numThreads) => {
 
   const SocksProxyAgent = require('socks-proxy-agent');
   const urlRequest = url.parse(conf.requestUrl);
@@ -35,15 +35,15 @@ async function threadRequest(thread) {
 
   for (let requestCount = 1; requestCount <= conf.loopCount; requestCount++) {
     try {
-      let result = await sendRequest(urlRequest, thread, requestCount);
+      let result = await sendRequest(urlRequest, numThreads, requestCount);
       LOGGER.info(result);
     }
     catch (error) {
       LOGGER.error(error)
     }
   }
-  if (--thread) threadRequest(thread);
-  if (thread == 0) {
+  if (--numThreads) threadRequest(numThreads);
+  if (numThreads == 0) {
     generateLogData.generateLogData();
   }
 }
@@ -51,4 +51,4 @@ async function threadRequest(thread) {
 module.exports = { threadRequest };
 
 // Support direct execution
-if (require.main === module) threadRequest(conf.threadNumber);
+if (require.main === module) threadRequest(conf.numThreads);

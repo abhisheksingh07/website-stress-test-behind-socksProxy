@@ -1,7 +1,7 @@
 {
   "ssl": false,
-  "threadNumber": 10,
-  "loopCount":4,
+  "numThreads": 10,
+  "loopCount": 4,
   "requestUrl": "http://kakao/",
   "proxyIporHostname": "127.0.0.1",
   "proxyPort": 1080
