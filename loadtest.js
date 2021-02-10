@@ -48,5 +48,7 @@ async function threadRequest(thread) {
   }
 }
 
+module.exports = { threadRequest };
+
 // Support direct execution
 if (require.main === module) threadRequest(conf.threadNumber);
