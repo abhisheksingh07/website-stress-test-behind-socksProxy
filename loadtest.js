@@ -1,28 +1,20 @@
 const conf = require('./conf/conf.json');
 const url = require('url');
-const http = require('http');
-const https = require('https');
-let winston = require('winston');
-let generateLogData = require('./filereadlinebyline.js');
-let SocksProxyAgent = require('socks-proxy-agent');
-const { type } = require('os');
-const proxy = `socks://${conf.proxyIporHostname}:${conf.proxyPort}`;
-let urlRequest = url.parse(conf.requestUrl);
 
-let loggers = {
-  mjson: winston.createLogger({
-    level: 'info',
-    format: winston.format.json(),
-    transports: [new winston.transports.File({ filename: 'stresstest.log' })],
-  })
+const winston = require('winston');
+const _LOGGER = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [new winston.transports.File({ filename: 'stresstest.log' })],
+});
+
+const LOGGER = {
+  info: (message) => _LOGGER.log({ level: "info", message: `${message}` }),
+  error: (message) => _LOGGER.log({ level: "error", message: `${message}` })
 }
 
-
-// create an instance of the `SocksProxyAgent` class with the proxy server information
-let agent = new SocksProxyAgent(proxy);
-const caller = conf.ssl ? https : http;
-
 function sendRequest(url, thread, requestNumber) {
+  const caller = conf.ssl ? require("https") : require("http");
   return new Promise((resolve, reject) => {
     caller.get(url, response => {
       if (response.statusCode == 200) {
@@ -34,25 +26,27 @@ function sendRequest(url, thread, requestNumber) {
 }
 
 async function threadRequest(thread) {
-  urlRequest.agent = agent;
+
+  const SocksProxyAgent = require('socks-proxy-agent');
+  const urlRequest = url.parse(conf.requestUrl);
+  urlRequest.agent = new SocksProxyAgent(`socks://${conf.proxyIporHostname}:${conf.proxyPort}`);
+
+  const generateLogData = require('./filereadlinebyline.js');
+
   for (let requestCount = 1; requestCount <= conf.loopCount; requestCount++) {
     try {
       let result = await sendRequest(urlRequest, thread, requestCount);
-      loggers.mjson.log({
-        level: 'info',
-        message: `${result}`
-      })
+      LOGGER.info(result);
     }
     catch (error) {
-      loggers.mjson.log({
-        level: 'error',
-        message: `${error}`
-      })
+      LOGGER.error(error)
     }
   }
   if (--thread) threadRequest(thread);
-  if (thread == 0){
-    generateLogData.generateLogData();   
+  if (thread == 0) {
+    generateLogData.generateLogData();
   }
 }
-threadRequest(conf.threadNumber);
+
+// Support direct execution
+if (require.main === module) threadRequest(conf.threadNumber);
