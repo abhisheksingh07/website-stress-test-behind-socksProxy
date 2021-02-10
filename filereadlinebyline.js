@@ -1,25 +1,24 @@
 const readline = require('readline');
 const fs = require('fs');
-const { throws } = require('assert');
-const generateLogData = async ()=>{
+const generateLogData = async () => {
     const file = readline.createInterface({
         input: fs.createReadStream('stresstest.log'),
         output: process.stdout,
         terminal: false
     });
-    let successCount=0; let errorCount=0; let totalNumberRequests = 0; 
-    let erropercentage=0; let successpercentage=0;
+    let successCount = 0; let errorCount = 0; let totalNumberRequests = 0;
+    let erropercentage = 0; let successpercentage = 0;
     file.on('line', (line) => {
-      let resultantOnject = JSON.parse(line);
-      if(resultantOnject.level == 'info' && JSON.stringify(resultantOnject.message).includes('200')) successCount++;
-      if(resultantOnject.level == 'error' && JSON.stringify(resultantOnject.message).includes('300' || '404' || '500')) errorCount++;
-      if(resultantOnject.level == 'error') errorCount++;
-      totalNumberRequests++;
+        let resultantOnject = JSON.parse(line);
+        if (resultantOnject.level == 'info' && JSON.stringify(resultantOnject.message).includes('200')) successCount++;
+        if (resultantOnject.level == 'error' && JSON.stringify(resultantOnject.message).includes('300' || '404' || '500')) errorCount++;
+        if (resultantOnject.level == 'error') errorCount++;
+        totalNumberRequests++;
     });
     file.on('close', function () {
-    erropercentage = (errorCount*100)/totalNumberRequests;
-    successpercentage = (successCount*100)/totalNumberRequests;
-    let htmlContent = `<!DOCTYPE HTML>
+        erropercentage = (errorCount * 100) / totalNumberRequests;
+        successpercentage = (successCount * 100) / totalNumberRequests;
+        let htmlContent = `<!DOCTYPE HTML>
     <html>
     <head>
     <link rel="stylesheet" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap-grid.min.css">
@@ -85,10 +84,10 @@ const generateLogData = async ()=>{
     </body>
     </html>`
 
-    fs.writeFile('loadtestresult.html', htmlContent, (error) => { throw error});
-    
+        fs.writeFile('loadtestresult.html', htmlContent, (error) => (error) ? console.error(error) : null);
+
     });
 }
 
 
-module.exports = {generateLogData};
+module.exports = { generateLogData };
