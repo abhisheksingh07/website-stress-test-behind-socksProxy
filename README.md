@@ -5,4 +5,3 @@
 3. Set the desired configuration by tweaking in config.json file.
 4. Run the file loadtest.js by command node loadtest.js
 5. To check the output open loadtestresult.html in browser.
-6. Also check the logs file to check the stresstest.log
