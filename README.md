@@ -1,7 +1,9 @@
-# website-stress-test-behind-socksProxy
-
-1. Clone the repositry by using git clone https://github.com/abhisheksingh07/website-stress-test-behind-socksProxy.git
-2. Run the npm i command.
-3. Set the desired configuration by tweaking in config.json file.
-4. Run the file loadtest.js by command node loadtest.js
-5. To check the output open loadtestresult.html in browser.
+# website-stress-test-behind-socks-proxy  
+  
+## Getting Started:  
+1. Clone the repositry and `cd` into project directory.  
+2. Run `npm install` to install dependencies.  
+3. Set the desired values in [`conf`](./conf/conf.json) file.  
+4. Execute test by running `node loadtest.js`.  
+5. To check output, open [`loadtestresult.html`](./loadtestresult.html) in browser.  
+  
